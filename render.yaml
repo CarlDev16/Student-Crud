@@ -2,7 +2,7 @@ services:
   # ── Backend: Spring Boot (Docker) ──────────────────────────────────────────
   - type: web
     name: student-backend
-    env: docker
+    runtime: docker
     plan: free
     dockerfilePath: ./student/Dockerfile
     dockerContext: ./student
@@ -32,16 +32,12 @@ services:
       - key: PORT
         value: "8080"
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: student-frontend
-          property: host
+        value: https://student-frontend.onrender.com
 
   # ── Frontend: React Vite (Static Site) ─────────────────────────────────────
   - type: web
     name: student-frontend
-    env: static
-    plan: free
+    runtime: static
     buildCommand: cd student-frontend && npm install && npm run build
     staticPublishPath: student-frontend/dist
     routes:
@@ -50,10 +46,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: student-backend
-          property: host
+        value: https://student-backend.onrender.com
 
 databases:
   # ── Managed PostgreSQL Database ────────────────────────────────────────────
