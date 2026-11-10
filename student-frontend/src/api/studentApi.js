@@ -1,6 +1,20 @@
 import axios from 'axios';
 
-const API_URL = '/mangune/students';
+// When deployed on Render, VITE_API_BASE_URL points to the deployed backend.
+// In local development, it defaults to '/mangune/students' to leverage the Vite reverse proxy.
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && envUrl.trim()) {
+    let clean = envUrl.trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(clean)) {
+      clean = `https://${clean}`;
+    }
+    return `${clean}/mangune/students`;
+  }
+  return '/mangune/students';
+};
+
+const API_URL = getBaseUrl();
 
 const studentApi = {
   // GET all students
