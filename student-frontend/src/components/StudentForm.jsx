@@ -1,89 +1,113 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const emptyStudent = { firstname: '', lastname: '', course: '', section: '' };
 
 export default function StudentForm({ onSave, editingStudent, onCancel }) {
-  const [form, setForm] = useState(emptyStudent);
+  const [form, setForm] = useState(() =>
+    editingStudent
+      ? {
+          firstname: editingStudent.firstname || '',
+          lastname: editingStudent.lastname || '',
+          course: editingStudent.course || '',
+          section: editingStudent.section || '',
+        }
+      : emptyStudent
+  );
 
-  useEffect(() => {
-    if (editingStudent) {
-      setForm({
-        firstname: editingStudent.firstname || '',
-        lastname: editingStudent.lastname || '',
-        course: editingStudent.course || '',
-        section: editingStudent.section || '',
-      });
-    } else {
-      setForm(emptyStudent);
-    }
-  }, [editingStudent]);
+  const [validationError, setValidationError] = useState('');
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (validationError) setValidationError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.firstname || !form.lastname || !form.course || !form.section) {
-      alert('Please fill in all fields.');
+    if (
+      !form.firstname.trim() ||
+      !form.lastname.trim() ||
+      !form.course.trim() ||
+      !form.section.trim()
+    ) {
+      setValidationError('Please fill in all required fields.');
       return;
     }
-    onSave(form);
-    setForm(emptyStudent);
+    onSave({
+      firstname: form.firstname.trim(),
+      lastname: form.lastname.trim(),
+      course: form.course.trim(),
+      section: form.section.trim(),
+    });
   };
 
   return (
-    <form className="student-form" onSubmit={handleSubmit}>
-      <h2>{editingStudent ? 'Edit Student' : 'Add Student'}</h2>
+    <form className="student-form" onSubmit={handleSubmit} noValidate>
+      <div className="form-title-row">
+        <h2>{editingStudent ? `Edit Student (ID: ${editingStudent.id})` : 'Add New Student'}</h2>
+        {editingStudent && (
+          <span className="badge badge-warning">Editing Mode</span>
+        )}
+      </div>
+
+      {validationError && (
+        <div className="form-validation-error">{validationError}</div>
+      )}
+
       <div className="form-grid">
         <div className="form-group">
-          <label htmlFor="firstname">First Name</label>
+          <label htmlFor="firstname">First Name <span className="required">*</span></label>
           <input
             id="firstname"
             name="firstname"
             type="text"
-            placeholder="First name"
+            placeholder="e.g. Juan"
             value={form.firstname}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="lastname">Last Name</label>
+          <label htmlFor="lastname">Last Name <span className="required">*</span></label>
           <input
             id="lastname"
             name="lastname"
             type="text"
-            placeholder="Last name"
+            placeholder="e.g. Dela Cruz"
             value={form.lastname}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="course">Course</label>
+          <label htmlFor="course">Course <span className="required">*</span></label>
           <input
             id="course"
             name="course"
             type="text"
-            placeholder="Course"
+            placeholder="e.g. BS Information Technology"
             value={form.course}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="section">Section</label>
+          <label htmlFor="section">Section <span className="required">*</span></label>
           <input
             id="section"
             name="section"
             type="text"
-            placeholder="Section"
+            placeholder="e.g. BSIT-3A"
             value={form.section}
             onChange={handleChange}
+            required
           />
         </div>
       </div>
+
       <div className="form-actions">
         <button type="submit" className="btn btn-primary">
-          {editingStudent ? 'Update' : 'Add'}
+          {editingStudent ? 'Save Changes' : 'Add Student'}
         </button>
         {editingStudent && (
           <button type="button" className="btn btn-secondary" onClick={onCancel}>

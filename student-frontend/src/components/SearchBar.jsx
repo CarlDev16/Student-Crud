@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-export default function SearchBar({ onSearch, onClear }) {
+export default function SearchBar({ onSearch, onClear, isFiltering }) {
   const [section, setSection] = useState('');
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!section.trim()) {
-      alert('Please enter a section to search.');
+    const trimmed = section.trim();
+    if (!trimmed) {
       return;
     }
-    onSearch(section.trim());
+    onSearch(trimmed);
   };
 
   const handleClear = () => {
@@ -19,18 +19,37 @@ export default function SearchBar({ onSearch, onClear }) {
 
   return (
     <form className="search-bar" onSubmit={handleSearch}>
-      <input
-        type="text"
-        placeholder="Search by section..."
-        value={section}
-        onChange={(e) => setSection(e.target.value)}
-      />
+      <div className="search-input-wrapper">
+        <input
+          type="text"
+          placeholder="Filter by section (e.g. BSIT-3A)..."
+          value={section}
+          onChange={(e) => setSection(e.target.value)}
+          aria-label="Filter by section"
+        />
+        {section && (
+          <button
+            type="button"
+            className="search-inline-clear"
+            onClick={() => setSection('')}
+            aria-label="Clear input"
+          >
+            &times;
+          </button>
+        )}
+      </div>
       <button type="submit" className="btn btn-primary">
         Search
       </button>
-      <button type="button" className="btn btn-secondary" onClick={handleClear}>
-        Clear
-      </button>
+      {isFiltering && (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleClear}
+        >
+          Reset Filter
+        </button>
+      )}
     </form>
   );
 }

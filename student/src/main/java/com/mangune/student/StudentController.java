@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "${FRONTEND_URL:http://localhost:3000}"})
 @RequestMapping(path="/mangune/students")
 public class StudentController {
 

@@ -1,10 +1,27 @@
-export default function StudentTable({ students, onEdit, onDelete, loading }) {
+export default function StudentTable({
+  students,
+  onView,
+  onEdit,
+  onDelete,
+  loading,
+}) {
   if (loading) {
-    return <p className="status-msg">Loading students...</p>;
+    return (
+      <div className="table-loading">
+        <div className="spinner"></div>
+        <p className="status-msg">Loading student records...</p>
+      </div>
+    );
   }
 
   if (students.length === 0) {
-    return <p className="status-msg">No students found.</p>;
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">📋</div>
+        <p className="empty-title">No Students Found</p>
+        <p className="status-msg">There are no student records matching the criteria.</p>
+      </div>
+    );
   }
 
   return (
@@ -17,22 +34,44 @@ export default function StudentTable({ students, onEdit, onDelete, loading }) {
             <th>Last Name</th>
             <th>Course</th>
             <th>Section</th>
-            <th>Actions</th>
+            <th className="actions-header">Actions</th>
           </tr>
         </thead>
         <tbody>
           {students.map((s) => (
             <tr key={s.id}>
-              <td>{s.id}</td>
-              <td>{s.firstname}</td>
-              <td>{s.lastname}</td>
-              <td>{s.course}</td>
-              <td>{s.section}</td>
+              <td className="id-cell">#{s.id}</td>
+              <td className="name-cell">{s.firstname}</td>
+              <td className="name-cell">{s.lastname}</td>
+              <td>
+                <span className="course-tag">{s.course}</span>
+              </td>
+              <td>
+                <span className="section-tag">{s.section}</span>
+              </td>
               <td className="action-cell">
-                <button className="btn btn-edit" onClick={() => onEdit(s)}>
+                <button
+                  type="button"
+                  className="btn btn-view"
+                  title="View Details"
+                  onClick={() => onView(s.id)}
+                >
+                  View
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-edit"
+                  title="Edit Student"
+                  onClick={() => onEdit(s)}
+                >
                   Edit
                 </button>
-                <button className="btn btn-delete" onClick={() => onDelete(s.id)}>
+                <button
+                  type="button"
+                  className="btn btn-delete"
+                  title="Delete Student"
+                  onClick={() => onDelete(s.id)}
+                >
                   Delete
                 </button>
               </td>
