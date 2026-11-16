@@ -19,5 +19,5 @@ COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# Activate the prod profile so application-prod.properties is used
-ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
+# Activate the prod profile so application-prod.properties is used and tune memory for 512MB container
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-Dspring.profiles.active=prod", "-jar", "app.jar"]

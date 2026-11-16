@@ -32,21 +32,25 @@ services:
       - key: PORT
         value: "8080"
       - key: FRONTEND_URL
-        value: https://student-frontend.onrender.com
+        sync: false
 
   # ── Frontend: React Vite (Static Site) ─────────────────────────────────────
   - type: web
     name: student-frontend
     runtime: static
-    buildCommand: cd student-frontend && npm install && npm run build
-    staticPublishPath: student-frontend/dist
+    rootDir: student-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://student-backend.onrender.com
+        fromService:
+          type: web
+          name: student-backend
+          envVarKey: RENDER_EXTERNAL_URL
 
 databases:
   # ── Managed PostgreSQL Database ────────────────────────────────────────────
