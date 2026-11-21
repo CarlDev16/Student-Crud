@@ -1,4 +1,3 @@
-
 package com.mangune.student;
 
 import java.net.URI;
@@ -55,7 +54,7 @@ public class StudentController {
                 .body("Student with id " + id + " not found.");
     }
 
-    // UPDATE STUDENT
+    // UPDATE STUDENT (Path ID)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudent(
             @PathVariable Integer id,
@@ -81,6 +80,19 @@ public class StudentController {
         return ResponseEntity.ok(saved);
     }
 
+    // Support PUT /mangune/students (ID provided via query param or body)
+    @PutMapping
+    public ResponseEntity<?> updateStudentWithoutIdInPath(
+            @RequestParam(required = false) Integer id,
+            @RequestBody Student updated) {
+        Integer targetId = (id != null) ? id : updated.getId();
+        if (targetId == null) {
+            return ResponseEntity.badRequest()
+                    .body("Student ID is required for update.");
+        }
+        return updateStudent(targetId, updated);
+    }
+
     // SEARCH STUDENT BY SECTION
     @GetMapping("/search/{section}")
     public ResponseEntity<?> searchStudentBySection(
@@ -97,7 +109,7 @@ public class StudentController {
         return ResponseEntity.ok(students);
     }
 
-    // DELETE STUDENT
+    // DELETE STUDENT (Path ID)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteStudent(
             @PathVariable Integer id) {
@@ -114,5 +126,21 @@ public class StudentController {
 
         return ResponseEntity.status(404)
                 .body("Student with id " + id + " not found.");
+    }
+
+    // Support DELETE /mangune/students (ID provided via query param or body)
+    @DeleteMapping
+    public ResponseEntity<String> deleteStudentWithoutIdInPath(
+            @RequestParam(required = false) Integer id,
+            @RequestBody(required = false) Student student) {
+        Integer targetId = id;
+        if (targetId == null && student != null) {
+            targetId = student.getId();
+        }
+        if (targetId == null) {
+            return ResponseEntity.badRequest()
+                    .body("Student ID is required for deletion.");
+        }
+        return deleteStudent(targetId);
     }
 }
